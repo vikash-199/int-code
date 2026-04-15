@@ -40,3 +40,16 @@ OR overwrite an existing file ❗
 📌 If file does NOT exist → new file will be created
 */
 fs.writeFile('data.txt', 'Hello vikash', (err) => {});
+
+//append file:-👉 Adds data without deleting old content
+
+fs.appendFile('data.txt', '\nNew content', (err) => {
+  console.log(err);
+});
+
+//delete file
+
+fs.unlink('data.txt', (err) => {
+  if (err) throw err;
+  console.log('File deleted');
+});
