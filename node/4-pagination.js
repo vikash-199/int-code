@@ -1,3 +1,6 @@
+//GET /users?page=1&limit=5
+// GET /users?page=2&limit=5
+
 const getUsers = async (req, res) => {
   try {
     //get query params
@@ -29,21 +32,23 @@ const getUsers = async (req, res) => {
   }
 };
 
-//GET /users?page=1&limit=5
-// GET /users?page=2&limit=5
-
-const getSearchUusers = async (req, res) => {
+//GET /users?page=1&limit=5&search=vika
+const getSearchedUsers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.page) || 5;
-    const search = parseInt(req.query.page) || '';
+    const limit = parseInt(req.query.limit);
+    const page = parseInt(req.query.page);
+    const search = req.query.search || '';
 
-    //skip
     const skip = (page - 1) * limit;
 
-    //search filter
-    const query = {
-      name: { $regex: search, $options: 'i' },
-    };
-  } catch (err) {}
+    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    const total = await User.countDocuments(query);
+
+    const users = await User.find(query).skip(skip).limit(limit);
+
+    res.status(200).json({});
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };
