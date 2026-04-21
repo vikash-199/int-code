@@ -47,7 +47,7 @@ const getSearchedUsers = async (req, res) => {
 
     const users = await User.find(query).skip(skip).limit(limit);
 
-    res.status(200).json({});
+    res.status(200).json({ users });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

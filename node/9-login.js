@@ -56,34 +56,33 @@ const loginUser = async (req, res) => {
 
 module.exports = loginUser;
 
-const logi = async (req, res) => {
+const logUser = async (req, res) => {
   try {
-    //get email and pass from body
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(401).json({ message: 'Invalid credential' });
+      return res
+        .status(401)
+        .json({ message: 'Email and password is required.' });
     }
-
-    //check user in db
     const user = await User.find({ email });
-
     if (!user) {
-      return res.status(400).json({ message: 'User does not exist' });
+      return res.status(401).json({ message: 'User dose not exist.' });
     }
 
-    //compare password
-    const comparePass = await bcrypt.compare(password, user.password);
+    const isValidPassword = bcrypt.compare(password, user.password);
 
-    if (!comparePass) {
-      return;
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    //create token
     const token = await jwt.sign({ id: user._id }, 'secretkey', {
       expiresIn: '15d',
     });
+
+    //set user in cache
+    await client.setEx(user._id, user);
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ success: false, message: 'Server err' });
   }
 };
