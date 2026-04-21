@@ -55,3 +55,35 @@ const loginUser = async (req, res) => {
 };
 
 module.exports = loginUser;
+
+const logi = async (req, res) => {
+  try {
+    //get email and pass from body
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(401).json({ message: 'Invalid credential' });
+    }
+
+    //check user in db
+    const user = await User.find({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: 'User does not exist' });
+    }
+
+    //compare password
+    const comparePass = await bcrypt.compare(password, user.password);
+
+    if (!comparePass) {
+      return;
+    }
+
+    //create token
+    const token = await jwt.sign({ id: user._id }, 'secretkey', {
+      expiresIn: '15d',
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

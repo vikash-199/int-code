@@ -21,14 +21,15 @@ fs.readFile('data.txt', 'utf-8', (err, data) => {
 });
 
 //Promise based(fs/promises):-morden and clean
-async function readFile() {
+const readFile = async (req, res) => {
   try {
-    const data = await fs.readFile('file.txt', 'utf-8');
-    console.log(data);
+    const data = await fs.readFile('data.txt', 'utf-8');
+
+    res.status(200).json({ success: true, data: data });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ success: false, message: err.message });
   }
-}
+};
 
 //write file
 /*
