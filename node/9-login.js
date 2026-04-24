@@ -55,34 +55,3 @@ const loginUser = async (req, res) => {
 };
 
 module.exports = loginUser;
-
-const logUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res
-        .status(401)
-        .json({ message: 'Email and password is required.' });
-    }
-    const user = await User.find({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'User dose not exist.' });
-    }
-
-    const isValidPassword = bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    const token = await jwt.sign({ id: user._id }, 'secretkey', {
-      expiresIn: '15d',
-    });
-
-    //set user in cache
-    await client.setEx(user._id, user);
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Server err' });
-  }
-};
